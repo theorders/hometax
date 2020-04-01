@@ -1,4 +1,4 @@
-module hometax
+module github.com/theorders/hometax
 
 go 1.13
 
