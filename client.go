@@ -9,6 +9,12 @@ import (
 type Client struct {
 	context.Context
 	httpCli *http.Client
+	*Session
+}
+
+type Session struct {
+	Token    string
+	UserClCd string
 }
 
 func NewClient(c context.Context) *Client {
@@ -22,5 +28,6 @@ func NewClient(c context.Context) *Client {
 			Jar:           cookieJar,
 			Timeout:       0,
 		},
+		nil,
 	}
 }

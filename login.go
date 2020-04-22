@@ -158,19 +158,21 @@ type BusinessListRes struct {
 		Result string `xml:"result"`
 	} `xml:"map"`
 	List struct {
-		Text string `xml:",chardata"`
-		ID   string `xml:"id,attr"`
-		Map  []struct {
-			Text              string `xml:",chardata"`
-			ID                string `xml:"id,attr"`
-			TxprStatNm        string `xml:"txprStatNm"`
-			Tin               string `xml:"tin"`
-			StatusValue       string `xml:"statusValue"`
-			TxprDscmDt        string `xml:"txprDscmDt"`
-			TxprNm            string `xml:"txprNm"`
-			TxprDscmNoEncCntn string `xml:"txprDscmNoEncCntn"`
-		} `xml:"map"`
+		Text string        `xml:",chardata"`
+		ID   string        `xml:"id,attr"`
+		Map  []CorpInfoSum `xml:"map"`
 	} `xml:"list"`
+}
+
+type CorpInfoSum struct {
+	Text              string `xml:",chardata"`
+	ID                string `xml:"id,attr"`
+	TxprStatNm        string `xml:"txprStatNm"`
+	Tin               string `xml:"tin"`
+	StatusValue       string `xml:"statusValue"`
+	TxprDscmDt        string `xml:"txprDscmDt"`
+	TxprNm            string `xml:"txprNm"`
+	TxprDscmNoEncCntn string `xml:"txprDscmNoEncCntn"`
 }
 
 //홈택스의 패스워드 암호화
@@ -372,9 +374,9 @@ func (c *Client) Login(id string, pw string) (*User, error) {
 		})
 
 	} else { //개인
-		domainUser.Name = businessList.Map.Map.UserNm
-		domainUser.RegNum = businessList.Map.Map.TxprDscmNo
-		domainUser.UserId = businessList.Map.Map.UserId
+		domainUser.Name = userInfo.Map.Map.UserNm
+		domainUser.RegNum = userInfo.Map.Map.TxprDscmNo
+		domainUser.UserId = userInfo.Map.Map.UserId
 	}
 
 	return &domainUser, nil
