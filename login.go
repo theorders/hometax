@@ -331,9 +331,10 @@ func (c *Client) Login(id string, pw string) (*User, error) {
 	if bizListErr != nil {
 		return nil, errors.New("로그인 오류가 발생했습니다 : " + bizListErr.Error())
 	}
-	//println(aefire.ToJson(userInfo, "    "))
 
 	businessList, bizListErr := c.BusinessList()
+
+	//println(aefire.ToJson(businessList, "    "))
 
 	domainUser := User{
 		BizList: []*CorpInfo{},
@@ -346,6 +347,10 @@ func (c *Client) Login(id string, pw string) (*User, error) {
 		domainUser.UserId = businessList.Map.Map.UserId
 
 		for _, biz := range businessList.List.Map {
+			if strings.Contains(biz.TxprStatNm, "폐업") {
+				continue
+			}
+
 			cd, _ := GetCloseDown(biz.TxprDscmNoEncCntn)
 
 			domainUser.BizList = append(domainUser.BizList, &CorpInfo{
