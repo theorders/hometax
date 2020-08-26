@@ -57,7 +57,7 @@ var homeTaxConfig = CloseDownConfig{
 
 func ParseHomeTaxCloseDown(resBody string, conf *CloseDownConfig) popbill.CloseDown {
 	cd := popbill.CloseDown{
-		CheckDate: time.Now().In(aefire.KRTimezone()).Format("20060102"),
+		CheckDate: time.Now().In(aefire.KRTimezone()).Format("2006-01-02"),
 	}
 
 	regex := regexp.MustCompile(conf.State.Date)
