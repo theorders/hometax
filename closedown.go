@@ -1,13 +1,14 @@
 package hometax
 
 import (
-	"errors"
 	"fmt"
 	"github.com/imroc/req"
+	"github.com/pkg/errors"
 	"github.com/theorders/aefire"
 	"github.com/theorders/popbill"
 	"regexp"
 	"strings"
+	"time"
 )
 
 type CloseDownConfig struct {
@@ -55,7 +56,9 @@ var homeTaxConfig = CloseDownConfig{
 }
 
 func ParseHomeTaxCloseDown(resBody string, conf *CloseDownConfig) popbill.CloseDown {
-	cd := popbill.CloseDown{}
+	cd := popbill.CloseDown{
+		CheckDate: time.Now().In(aefire.KRTimezone()).Format("2006-01-02"),
+	}
 
 	regex := regexp.MustCompile(conf.State.Date)
 	cd.StateDate = strings.Replace(regex.FindString(resBody), "-", "", -1)
@@ -93,17 +96,18 @@ func ParseHomeTaxCloseDown(resBody string, conf *CloseDownConfig) popbill.CloseD
 	return cd
 }
 
-func GetCloseDown(corpNum string) (*popbill.CloseDown, error) {
+func (c *Client) GetCloseDown(corpNum string) (*popbill.CloseDown, error) {
 	if !aefire.ValidateCorpNum(corpNum) {
-		return nil, errors.New("사업자등록번호 형식이 맞지 않습니다")
+		return nil, errors.New("GetCloseDown: 사업자등록번호 형식이 맞지 않습니다")
 	}
 
 	res, err := req.Post(
 		"https://teht.hometax.go.kr/wqAction.do?actionId=ATTABZAA001R08&screenId=UTEABAAA13&popupYn=false&realScreenId=",
+		c.httpCli,
 		req.BodyXML(fmt.Sprintf(`<map id='ATTABZAA001R08'><pubcUserNo/><mobYn>N</mobYn><inqrTrgtClCd>1</inqrTrgtClCd><txprDscmNo>%s</txprDscmNo><dongCode>__MIDDLE__</dongCode><psbSearch>Y</psbSearch><map id='userReqInfoVO'/></map>`, corpNum)))
 
 	if aefire.LogIfError(err) {
-		return nil, errors.New("홈택스 연결이 실패했습니다")
+		return nil, errors.Wrap(err, "홈택스 연결이 실패했습니다")
 	}
 
 	closeDown := ParseHomeTaxCloseDown(res.String(), &homeTaxConfig)

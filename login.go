@@ -351,7 +351,7 @@ func (c *Client) Login(id string, pw string) (*User, error) {
 				continue
 			}
 
-			cd, _ := GetCloseDown(biz.TxprDscmNoEncCntn)
+			cd, _ := c.GetCloseDown(biz.TxprDscmNoEncCntn)
 
 			domainUser.BizList = append(domainUser.BizList, &CorpInfo{
 				CorpInfo: popbill.CorpInfo{
@@ -367,7 +367,7 @@ func (c *Client) Login(id string, pw string) (*User, error) {
 		domainUser.RegNum = userInfo.Map.Map.RprsResno
 		domainUser.UserId = userInfo.Map.Map.UserId
 
-		cd, _ := GetCloseDown(userInfo.Map.Map.TxprDscmNo)
+		cd, _ := c.GetCloseDown(userInfo.Map.Map.TxprDscmNo)
 
 		domainUser.BizList = append(domainUser.BizList, &CorpInfo{
 			CorpInfo: popbill.CorpInfo{
